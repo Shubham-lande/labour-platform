@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Fast Open in Browser (Instant)",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/client"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Start Servers & Launch Chrome",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/client",
+            "preLaunchTask": "Start Full Stack App"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Start Backend Server",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/server",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Start Frontend Client",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/client",
+            "console": "integratedTerminal"
+        }
+    ]
+}
