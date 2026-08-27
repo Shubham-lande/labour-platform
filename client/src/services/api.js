@@ -129,7 +129,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    const is404OrNetwork = !error.response || error.response.status === 404 || error.code === 'ERR_NETWORK';
+    const is404OrNetwork = !error.response || error.response.status === 404 || error.response.status === 405 || error.code === 'ERR_NETWORK';
     if (is404OrNetwork) {
       const url = error.config?.url || '';
       const method = error.config?.method || 'get';
