@@ -11,8 +11,7 @@ const connectDB = async () => {
     console.log(`[MongoDB Connected]: Host -> ${conn.connection.host}`);
   } catch (error) {
     isConnected = false;
-    console.warn(`[MongoDB Warning]: Could not connect to MongoDB (${error.message}).`);
-    console.warn(`[Fallback Mode]: Server will utilize fallback storage for live API demonstration.`);
+    console.log(`[Database Info]: Local MongoDB not detected (${error.message}). Running in Live Demo / Fallback Mode.`);
   }
 };
 
