@@ -58,6 +58,10 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`[Express Backend Running]: http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`[Express Backend Running]: http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
