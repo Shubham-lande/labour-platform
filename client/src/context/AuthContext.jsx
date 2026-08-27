@@ -4,8 +4,15 @@ import api from '../services/api';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [roleProfile, setRoleProfile] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUserStr = localStorage.getItem('labour_platform_user');
+    try {
+      return storedUserStr ? JSON.parse(storedUserStr) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const [roleProfile, setRoleProfile] = useState(user);
   const [token, setToken] = useState(() => localStorage.getItem('labour_platform_token') || null);
   const [loading, setLoading] = useState(true);
 
@@ -13,17 +20,27 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       const storedToken = localStorage.getItem('labour_platform_token');
-      if (storedToken) {
+      const storedUserStr = localStorage.getItem('labour_platform_user');
+      let storedUser = null;
+      try {
+        storedUser = storedUserStr ? JSON.parse(storedUserStr) : null;
+      } catch (e) {}
+
+      if (storedToken && storedUser) {
+        setUser(storedUser);
+        setRoleProfile(storedUser);
         try {
           const res = await api.get('/auth/me');
-          if (res.success) {
+          if (res.success && res.user) {
             setUser(res.user);
-            setRoleProfile(res.profile);
+            setRoleProfile(res.profile || res.user);
           }
         } catch (err) {
-          console.warn('Auto-login session expired:', err.message);
-          logout();
+          console.warn('Auto-login session sync notice:', err.message);
         }
+      } else if (!storedToken) {
+        setUser(null);
+        setRoleProfile(null);
       }
       setLoading(false);
     };
@@ -39,10 +56,11 @@ export const AuthProvider = ({ children }) => {
       if (res.success) {
         setToken(res.token);
         setUser(res.user);
+        setRoleProfile(res.profile || res.user);
         localStorage.setItem('labour_platform_token', res.token);
         localStorage.setItem('labour_platform_user', JSON.stringify(res.user));
 
-        // Fetch complete profile with role-specific details
+        // Fetch complete profile with role-specific details in background
         try {
           const profileRes = await api.get('/auth/me');
           if (profileRes.success) {
@@ -67,6 +85,7 @@ export const AuthProvider = ({ children }) => {
       if (res.success) {
         setToken(res.token);
         setUser(res.user);
+        setRoleProfile(res.profile || res.user);
         localStorage.setItem('labour_platform_token', res.token);
         localStorage.setItem('labour_platform_user', JSON.stringify(res.user));
         return res;
