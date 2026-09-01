@@ -22,7 +22,8 @@ const ProtectedRoute = ({ allowedRoles = [], children }) => {
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     // Redirect user to their own role dashboard if trying to access unauthorized route
-    const roleRedirect = `/dashboard/${user.role}`;
+    const rolePath = (user.role === 'contractor' || user.role === 'customer') ? 'customer' : user.role;
+    const roleRedirect = `/dashboard/${rolePath}`;
     return <Navigate to={roleRedirect} replace />;
   }
 

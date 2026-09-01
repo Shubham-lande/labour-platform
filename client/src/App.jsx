@@ -64,7 +64,15 @@ function App() {
             <Route
               path="/dashboard/customer"
               element={
-                <ProtectedRoute allowedRoles={['customer', 'admin']}>
+                <ProtectedRoute allowedRoles={['customer', 'contractor', 'admin']}>
+                  <CustomerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/contractor"
+              element={
+                <ProtectedRoute allowedRoles={['customer', 'contractor', 'admin']}>
                   <CustomerDashboard />
                 </ProtectedRoute>
               }

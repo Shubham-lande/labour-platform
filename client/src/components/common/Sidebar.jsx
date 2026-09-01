@@ -28,6 +28,18 @@ import {
   Shield,
 } from 'lucide-react';
 
+const CUSTOMER_MENU = [
+  { id: 'find', label: 'Find Labour', icon: Search, badge: 'Hire' },
+  { id: 'bookings', label: 'My Bookings', icon: BookOpen },
+  { id: 'projects', label: 'My Projects', icon: FolderKanban },
+  { id: 'create', label: 'Create Work', icon: PlusCircle },
+  { id: 'workers', label: 'Assigned Workers', icon: Users, badge: '24' },
+  { id: 'payments', label: 'Payments', icon: CreditCard },
+  { id: 'messages', label: 'Messages', icon: MessageSquare },
+  { id: 'notifications', label: 'Notifications', icon: Bell, badge: '5' },
+  { id: 'reviews', label: 'Worker Reviews', icon: Star },
+];
+
 const MENU_ITEMS_BY_ROLE = {
   labour: [
     { id: 'profile', label: 'My Profile', icon: UserCheck, badge: 'Active' },
@@ -39,17 +51,8 @@ const MENU_ITEMS_BY_ROLE = {
     { id: 'notifications', label: 'Notifications', icon: Bell, badge: '3' },
     { id: 'settings', label: 'Account Settings', icon: Settings },
   ],
-  customer: [
-    { id: 'find', label: 'Find Labour', icon: Search, badge: 'Hire' },
-    { id: 'bookings', label: 'My Bookings', icon: BookOpen },
-    { id: 'projects', label: 'My Projects', icon: FolderKanban },
-    { id: 'create', label: 'Create Work', icon: PlusCircle },
-    { id: 'workers', label: 'Assigned Workers', icon: Users, badge: '24' },
-    { id: 'payments', label: 'Payments', icon: CreditCard },
-    { id: 'messages', label: 'Messages', icon: MessageSquare },
-    { id: 'notifications', label: 'Notifications', icon: Bell, badge: '5' },
-    { id: 'reviews', label: 'Worker Reviews', icon: Star },
-  ],
+  customer: CUSTOMER_MENU,
+  contractor: CUSTOMER_MENU,
   admin: [
     { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'labour', label: 'Labour Management', icon: HardHat, badge: '1.2k' },

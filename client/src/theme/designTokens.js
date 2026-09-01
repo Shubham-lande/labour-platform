@@ -31,6 +31,11 @@ export const ROLE_CONFIG = {
     color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
     iconName: 'Building2',
   },
+  contractor: {
+    label: 'Customer / Contractor',
+    color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
+    iconName: 'Building2',
+  },
 };
 
 export const STATUS_VARIANTS = {

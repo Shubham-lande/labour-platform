@@ -14,6 +14,13 @@ import {
   FileCheck,
 } from 'lucide-react';
 
+const CUSTOMER_MOBILE_ITEMS = [
+  { id: 'find', label: 'Find', icon: Search },
+  { id: 'bookings', label: 'Bookings', icon: BookOpen },
+  { id: 'projects', label: 'Projects', icon: FolderKanban },
+  { id: 'payments', label: 'Payments', icon: Wallet },
+];
+
 const MOBILE_ITEMS = {
   labour: [
     { id: 'profile', label: 'Profile', icon: UserCheck },
@@ -22,12 +29,8 @@ const MOBILE_ITEMS = {
     { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
     { id: 'earnings', label: 'Earnings', icon: Wallet },
   ],
-  customer: [
-    { id: 'find', label: 'Find', icon: Search },
-    { id: 'bookings', label: 'Bookings', icon: BookOpen },
-    { id: 'projects', label: 'Projects', icon: FolderKanban },
-    { id: 'payments', label: 'Payments', icon: Wallet },
-  ],
+  customer: CUSTOMER_MOBILE_ITEMS,
+  contractor: CUSTOMER_MOBILE_ITEMS,
   admin: [
     { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
     { id: 'labour', label: 'Labour', icon: HardHat },

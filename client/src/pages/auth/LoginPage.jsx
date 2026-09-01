@@ -84,8 +84,14 @@ const LoginPage = () => {
         res = await login(identifier, password);
       } catch (e) {
         let role = 'customer';
-        if (identifier.includes('admin')) role = 'admin';
-        if (identifier.includes('labour')) role = 'labour';
+        const idLower = identifier.toLowerCase();
+        if (idLower.startsWith('admin') || idLower.includes('admin@')) {
+          role = 'admin';
+        } else if (idLower.startsWith('labour') || idLower.includes('labour@') || idLower.includes('worker')) {
+          role = 'labour';
+        } else {
+          role = 'customer';
+        }
         const userObj = { _id: 'demo_' + role, id: 'demo_' + role, name: identifier.split('@')[0] || 'User', role, email: identifier };
         localStorage.setItem('labour_platform_token', 'demo_token_' + Date.now());
         localStorage.setItem('labour_platform_user', JSON.stringify(userObj));
@@ -207,7 +213,7 @@ const LoginPage = () => {
                   onClick={() => handleQuickDemo('customer')}
                   className="px-2.5 py-2 rounded-xl text-[11px] font-semibold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 transition-all flex items-center justify-center gap-1 cursor-pointer"
                 >
-                  <Building2 className="w-3 h-3" /> Customer
+                  <Building2 className="w-3 h-3" /> Contractor
                 </button>
                 <button
                   type="button"

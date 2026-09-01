@@ -14,15 +14,18 @@ const getMockResponse = (url, method, data) => {
   const normalizedUrl = url || '';
 
   if (normalizedUrl.includes('/auth/login')) {
-    const identifier = data?.identifier || '';
+    const identifier = (data?.identifier || '').toLowerCase();
     let role = 'customer';
-    let name = 'Demo Customer';
-    if (identifier.includes('admin')) {
+    let name = 'Demo Contractor / Customer';
+    if (identifier.startsWith('admin') || identifier === 'admin@labourhub.com') {
       role = 'admin';
       name = 'System Administrator';
-    } else if (identifier.includes('labour')) {
+    } else if (identifier.startsWith('labour') || identifier === 'labour@labourhub.com' || identifier.includes('worker')) {
       role = 'labour';
       name = 'Demo Skilled Worker';
+    } else if (identifier.startsWith('contractor') || identifier.startsWith('customer') || identifier === 'customer@labourhub.com') {
+      role = 'customer';
+      name = 'Demo Contractor / Customer';
     }
 
     const mockUser = {
