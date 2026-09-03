@@ -8,7 +8,15 @@ dotenv.config();
 
 const app = express();
 
-// Connect MongoDB
+// Connect DB Middleware for Serverless Functions & Long-running Servers
+app.use(async (req, res, next) => {
+  if (process.env.MONGODB_URI) {
+    await connectDB();
+  }
+  next();
+});
+
+// Initial DB connection attempt
 connectDB();
 
 // Middleware
