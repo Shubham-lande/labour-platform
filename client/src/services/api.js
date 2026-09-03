@@ -19,22 +19,23 @@ const getMockResponse = (url, method, data) => {
     let name = 'Demo Contractor / Customer';
     if (identifier.startsWith('admin') || identifier === 'admin@labourhub.com') {
       role = 'admin';
-      name = 'System Administrator';
+      name = 'System Enterprise Admin';
     } else if (identifier.startsWith('labour') || identifier === 'labour@labourhub.com' || identifier.includes('worker')) {
       role = 'labour';
-      name = 'Demo Skilled Worker';
+      name = 'Mol Patil';
     } else if (identifier.startsWith('contractor') || identifier.startsWith('customer') || identifier === 'customer@labourhub.com') {
       role = 'customer';
-      name = 'Demo Contractor / Customer';
+      name = 'Apex Buildcon Pvt Ltd';
     }
 
     const mockUser = {
-      _id: 'mock_user_' + role,
-      id: 'mock_user_' + role,
+      _id: role === 'labour' ? '65f0a0000000000000000002' : role === 'customer' ? '65f0a0000000000000000003' : '65f0a0000000000000000001',
+      id: role === 'labour' ? '65f0a0000000000000000002' : role === 'customer' ? '65f0a0000000000000000003' : '65f0a0000000000000000001',
+      fullName: name,
       name,
       email: identifier || `${role}@labourhub.com`,
       role,
-      phone: '+91 98765 43210',
+      phone: '+91 98123 45678',
       isVerified: true,
     };
 
@@ -42,7 +43,7 @@ const getMockResponse = (url, method, data) => {
       success: true,
       token: 'demo_jwt_token_' + Date.now(),
       user: mockUser,
-      profile: { ...mockUser, bio: 'Live demo user profile', status: 'available' },
+      profile: { ...mockUser, bio: 'Certified Grade-A Industrial Electrician', status: 'available' },
     };
   }
 

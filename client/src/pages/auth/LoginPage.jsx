@@ -54,8 +54,16 @@ const LoginPage = () => {
         res = await login(demoEmail, demoPass);
       } catch (e) {
         // Fallback for static preview links
-        const roleNames = { admin: 'System Administrator', labour: 'Demo Skilled Worker', customer: 'Demo Customer' };
-        const userObj = { _id: 'demo_' + demoRole, id: 'demo_' + demoRole, name: roleNames[demoRole], role: demoRole, email: demoEmail };
+        const roleNames = { admin: 'System Enterprise Admin', labour: 'Mol Patil', customer: 'Apex Buildcon Pvt Ltd' };
+        const demoIds = { admin: '65f0a0000000000000000001', labour: '65f0a0000000000000000002', customer: '65f0a0000000000000000003' };
+        const userObj = {
+          _id: demoIds[demoRole] || 'demo_' + demoRole,
+          id: demoIds[demoRole] || 'demo_' + demoRole,
+          fullName: roleNames[demoRole],
+          name: roleNames[demoRole],
+          role: demoRole,
+          email: demoEmail,
+        };
         localStorage.setItem('labour_platform_token', 'demo_token_' + Date.now());
         localStorage.setItem('labour_platform_user', JSON.stringify(userObj));
         res = { success: true, user: userObj };
@@ -84,15 +92,23 @@ const LoginPage = () => {
         res = await login(identifier, password);
       } catch (e) {
         let role = 'customer';
+        let name = identifier.split('@')[0] || 'User';
+        let userId = 'demo_' + Date.now();
         const idLower = identifier.toLowerCase();
         if (idLower.startsWith('admin') || idLower.includes('admin@')) {
           role = 'admin';
+          name = 'System Enterprise Admin';
+          userId = '65f0a0000000000000000001';
         } else if (idLower.startsWith('labour') || idLower.includes('labour@') || idLower.includes('worker')) {
           role = 'labour';
+          name = 'Mol Patil';
+          userId = '65f0a0000000000000000002';
         } else {
           role = 'customer';
+          name = 'Apex Buildcon Pvt Ltd';
+          userId = '65f0a0000000000000000003';
         }
-        const userObj = { _id: 'demo_' + role, id: 'demo_' + role, name: identifier.split('@')[0] || 'User', role, email: identifier };
+        const userObj = { _id: userId, id: userId, fullName: name, name, role, email: identifier };
         localStorage.setItem('labour_platform_token', 'demo_token_' + Date.now());
         localStorage.setItem('labour_platform_user', JSON.stringify(userObj));
         res = { success: true, user: userObj };
