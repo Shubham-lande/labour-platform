@@ -1,13 +1,70 @@
+const Project = require('../models/Project');
+const Booking = require('../models/Booking');
+const { getDBStatus } = require('../config/db');
+const { getFallbackProjects, getFallbackBookingsForCustomer } = require('./fallbackStore');
+
 // @desc    Get Customer Dashboard Data
 // @route   GET /api/customer/dashboard
 // @access  Private (Customer only)
 const getCustomerDashboard = async (req, res) => {
   try {
+    const customerId = req.user._id || req.user.id;
+    const isMongoDB = getDBStatus();
+
+    let myProjects = [];
+    let myBookings = [];
+
+    if (isMongoDB) {
+      const rawProjects = await Project.find({ customer: customerId }).sort('-createdAt');
+      myProjects = rawProjects.map((p) => ({
+        id: p._id,
+        name: p.name,
+        site: p.location?.address || p.location?.city || 'Site',
+        status: p.status,
+        progress: p.progressPercentage || 0,
+        activeWorkers: p.assignedWorkers?.length || p.workerCount || 1,
+      }));
+
+      const rawBookings = await Booking.find({ customer: customerId }).sort('-createdAt');
+      myBookings = rawBookings.map((b) => ({
+        id: b._id,
+        title: b.title,
+        workers: b.workerCount || 1,
+        location: b.location?.address || b.location?.city || 'Location',
+        startDate: b.startDate ? new Date(b.startDate).toLocaleDateString() : 'Immediate',
+        status: b.status,
+        budget: `₹${b.estimatedBudget}`,
+      }));
+    } else {
+      const rawProjects = getFallbackProjects('all').filter(
+        (p) => p.customer.toString() === customerId.toString()
+      );
+      myProjects = rawProjects.map((p) => ({
+        id: p._id,
+        name: p.name,
+        site: p.location?.address || p.location?.city || 'Site',
+        status: p.status,
+        progress: p.progressPercentage || 0,
+        activeWorkers: p.assignedWorkers?.length || p.workerCount || 1,
+      }));
+
+      const rawBookings = getFallbackBookingsForCustomer(customerId);
+      myBookings = rawBookings.map((b) => ({
+        id: b._id,
+        title: b.title,
+        workers: b.workerCount || 1,
+        location: b.location?.address || b.location?.city || 'Location',
+        startDate: b.startDate ? b.startDate : 'Immediate',
+        status: b.status,
+        budget: `₹${b.estimatedBudget}`,
+      }));
+    }
+
     const mockDashboardData = {
       stats: {
-        activeBookings: 6,
-        activeProjects: 3,
-        totalAssignedWorkers: 24,
+        activeBookings: myBookings.filter((b) => b.status === 'pending' || b.status === 'accepted').length,
+        activeProjects: myProjects.filter((p) => p.status === 'in_progress' || p.status === 'labour_assigned').length,
+        totalAssignedWorkers: myProjects.reduce((acc, p) => acc + (p.activeWorkers || 0), 0) || 15,
         monthlySpent: 425000,
         pendingApprovals: 2,
         satisfactionRating: 4.95,
@@ -18,14 +75,11 @@ const getCustomerDashboard = async (req, res) => {
         { category: 'Civil & Masonry Specialists', count: 82, rate: '₹90-140/hr', icon: 'Hammer' },
         { category: 'HVAC & Ducting Techs', count: 26, rate: '₹130-190/hr', icon: 'Wind' },
       ],
-      myBookings: [
+      myBookings: myBookings.length > 0 ? myBookings : [
         { id: 'BK-7701', title: 'Commercial Tower Phase 2 Electrical Crew', workers: 8, location: 'Lower Parel', startDate: '2026-08-18', status: 'active', budget: '₹140,000' },
-        { id: 'BK-7692', title: 'Data Center Plumbing & Cooling Setup', workers: 5, location: 'BKC Financial Center', startDate: '2026-08-20', status: 'active', budget: '₹95,000' },
-        { id: 'BK-7611', title: 'Warehouse Masonry Work', workers: 11, location: 'Bhiwandi Logistics Hub', startDate: '2026-08-01', status: 'completed', budget: '₹190,000' },
       ],
-      myProjects: [
+      myProjects: myProjects.length > 0 ? myProjects : [
         { id: 'PRJ-101', name: 'Horizon High-Rise Tower A', site: 'Lower Parel', status: 'In Progress', progress: 68, activeWorkers: 14 },
-        { id: 'PRJ-102', name: 'Metro Line Substation Wiring', site: 'Andheri East', status: 'In Progress', progress: 42, activeWorkers: 10 },
       ],
       recentPayments: [
         { id: 'PAY-3310', date: '2026-08-21', project: 'Horizon Tower A', amount: 140000, recipient: 'Labour Booking Escrow', status: 'escrow_locked' },

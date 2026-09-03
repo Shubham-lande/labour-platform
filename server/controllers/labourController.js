@@ -7,6 +7,9 @@ const {
   getFallbackBookingsForLabour,
 } = require('./fallbackStore');
 
+const Project = require('../models/Project');
+const Booking = require('../models/Booking');
+
 // @desc    Get Labour Dashboard Data
 // @route   GET /api/labour/dashboard
 // @access  Private (Labour only)
@@ -17,19 +20,48 @@ const getLabourDashboard = async (req, res) => {
 
     let profile = null;
     let workRequests = [];
+    let assignedProjects = [];
 
     if (isMongoDB) {
       profile = await LabourProfile.findOne({ userId });
+      const rawRequests = await Booking.find({ labour: userId }).sort('-createdAt');
+      workRequests = rawRequests.map((b) => ({
+        id: b._id,
+        title: b.title,
+        location: b.location?.address || b.location?.city || 'Site Location',
+        rate: `₹${b.estimatedBudget}/est`,
+        duration: `${b.startDate ? new Date(b.startDate).toLocaleDateString() : 'Immediate'}`,
+        customer: b.customerName || 'Customer Contractor',
+        status: b.status,
+      }));
+
+      const rawProjects = await Project.find({ 'assignedWorkers.workerId': userId }).sort('-createdAt');
+      assignedProjects = rawProjects;
     } else {
       profile = getFallbackLabourProfile(userId);
       workRequests = getFallbackBookingsForLabour(userId);
+      const rawProjects = getFallbackProjects('all').filter((p) =>
+        p.assignedWorkers && p.assignedWorkers.some((w) => w.workerId.toString() === userId.toString())
+      );
+      assignedProjects = rawProjects;
     }
+
+    const formattedJobs = assignedProjects.map((p) => ({
+      id: p._id,
+      title: p.name,
+      site: p.location?.address || p.location?.city || 'Site Location',
+      contractor: p.customerName || 'Contractor Ltd',
+      duration: `${p.startDate} - ${p.deadline}`,
+      status: p.status || 'in_progress',
+      payout: `₹${p.budget || 15000}`,
+      progressPercentage: p.progressPercentage || 0,
+    }));
 
     const mockDashboardData = {
       stats: {
-        activeRequests: workRequests.filter((w) => w.status === 'pending').length || 4,
-        assignedJobs: workRequests.filter((w) => w.status === 'accepted' || w.status === 'scheduled').length || 2,
-        todayAttendanceStatus: 'Checked-In (Site 4B)',
+        activeRequests: workRequests.filter((w) => w.status === 'pending').length,
+        assignedJobs: formattedJobs.filter((j) => j.status !== 'completed' && j.status !== 'closed').length,
+        todayAttendanceStatus: 'Checked-In (Site)',
         monthlyEarnings: profile?.totalEarnings || 38400,
         completedJobsTotal: profile?.completedJobs || 142,
         averageRating: profile?.rating || 4.9,
@@ -37,11 +69,9 @@ const getLabourDashboard = async (req, res) => {
       workRequests: workRequests.length > 0 ? workRequests : [
         { id: 'WR-9821', title: 'Commercial Mall Wiring Helper', location: 'Bandra West, Mumbai', rate: '₹950/day', duration: '5 Days', customer: 'Nexus Infra Ltd', status: 'pending' },
         { id: 'WR-9824', title: 'High-Voltage Cable Splicing', location: 'Navi Mumbai', rate: '₹1,400/day', duration: '2 Days', customer: 'L&T Infrastructure', status: 'pending' },
-        { id: 'WR-9829', title: 'Solar Array Substation Setup', location: 'Thane West', rate: '₹1,250/day', duration: '8 Days', customer: 'GreenTech Energy', status: 'pending' },
       ],
-      myJobs: [
+      myJobs: formattedJobs.length > 0 ? formattedJobs : [
         { id: 'JOB-4410', title: 'Smart Building Automation Panel Assembly', site: 'Lower Parel Tech Park', contractor: 'Apex Buildcon', duration: 'Aug 20 - Aug 28', status: 'in_progress', payout: '₹10,800' },
-        { id: 'JOB-4389', title: 'Datacenter Backup Generator Wiring', site: 'BKC Financial Hub', contractor: 'Reliance Infra', duration: 'Aug 10 - Aug 18', status: 'completed', payout: '₹12,600' },
       ],
       recentEarnings: [
         { id: 'TXN-9901', date: '2026-08-22', description: 'Weekly Payout (Job #JOB-4389)', amount: 12600, status: 'transferred' },
@@ -49,7 +79,7 @@ const getLabourDashboard = async (req, res) => {
       ],
       notifications: [
         { id: 1, type: 'info', text: 'New urgent electrical work request available in Bandra West', time: '10 mins ago' },
-        { id: 2, type: 'success', text: 'Attendance confirmed for Site 4B. Check-in logged at 08:45 AM', time: '5 hours ago' },
+        { id: 2, type: 'success', text: 'Attendance confirmed for Site. Check-in logged at 08:45 AM', time: '5 hours ago' },
       ],
     };
 
