@@ -49,36 +49,13 @@ const LoginPage = () => {
     setLoading(true);
     setErrorMessage('');
     try {
-      let res;
-      try {
-        res = await login(demoEmail, demoPass);
-      } catch (e) {
-        // Fallback for static preview links
-        const roleNames = { admin: 'System Enterprise Admin', labour: 'Mol Patil', customer: 'Apex Buildcon Pvt Ltd' };
-        const demoIds = { admin: '65f0a0000000000000000001', labour: '65f0a0000000000000000002', customer: '65f0a0000000000000000003' };
-        const demoAvatars = {
-          labour: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
-          customer: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250',
-          admin: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
-        };
-        const userObj = {
-          _id: demoIds[demoRole] || 'demo_' + demoRole,
-          id: demoIds[demoRole] || 'demo_' + demoRole,
-          fullName: roleNames[demoRole],
-          name: roleNames[demoRole],
-          role: demoRole,
-          email: demoEmail,
-          avatar: demoAvatars[demoRole],
-          isVerified: true,
-        };
-        localStorage.setItem('labour_platform_token', 'demo_token_' + Date.now());
-        localStorage.setItem('labour_platform_user', JSON.stringify(userObj));
-        res = { success: true, user: userObj };
+      const res = await login(demoEmail, demoPass);
+      if (res && res.user) {
+        toastSuccess(`Welcome back! Authenticated as ${res.user?.name || res.user?.fullName || demoRole}`);
+        window.location.href = `/dashboard/${res.user.role}`;
       }
-      toastSuccess(`Welcome back! Authenticated as ${res.user?.name || res.user?.fullName || demoRole}`);
-      window.location.href = `/dashboard/${res.user.role}`;
     } catch (err) {
-      setErrorMessage(err.message || 'Login failed.');
+      setErrorMessage(err.message || 'Login failed. Please verify the backend API is running.');
     } finally {
       setLoading(false);
     }
@@ -94,50 +71,13 @@ const LoginPage = () => {
     setLoading(true);
     setErrorMessage('');
     try {
-      let res;
-      try {
-        res = await login(identifier, password);
-      } catch (e) {
-        let role = 'customer';
-        let name = identifier.split('@')[0] || 'User';
-        let userId = 'demo_' + Date.now();
-        const idLower = identifier.toLowerCase();
-        if (idLower.startsWith('admin') || idLower.includes('admin@')) {
-          role = 'admin';
-          name = 'System Enterprise Admin';
-          userId = '65f0a0000000000000000001';
-        } else if (idLower.startsWith('labour') || idLower.includes('labour@') || idLower.includes('worker')) {
-          role = 'labour';
-          name = 'Mol Patil';
-          userId = '65f0a0000000000000000002';
-        } else {
-          role = 'customer';
-          name = 'Apex Buildcon Pvt Ltd';
-          userId = '65f0a0000000000000000003';
-        }
-        const demoAvatars = {
-          labour: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
-          customer: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250',
-          admin: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
-        };
-        const userObj = {
-          _id: userId,
-          id: userId,
-          fullName: name,
-          name,
-          role,
-          email: identifier,
-          avatar: demoAvatars[role] || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
-          isVerified: true,
-        };
-        localStorage.setItem('labour_platform_token', 'demo_token_' + Date.now());
-        localStorage.setItem('labour_platform_user', JSON.stringify(userObj));
-        res = { success: true, user: userObj };
+      const res = await login(identifier, password);
+      if (res && res.user) {
+        toastSuccess(`Login successful! Redirecting to ${res.user.role} workspace...`);
+        window.location.href = `/dashboard/${res.user.role}`;
       }
-      toastSuccess(`Login successful! Redirecting to ${res.user.role} workspace...`);
-      window.location.href = `/dashboard/${res.user.role}`;
     } catch (err) {
-      setErrorMessage(err.message || 'Invalid credentials');
+      setErrorMessage(err.message || 'Invalid credentials or backend unavailable.');
     } finally {
       setLoading(false);
     }

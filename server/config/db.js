@@ -1,32 +1,53 @@
 const mongoose = require('mongoose');
 
-let isConnected = false;
+/**
+ * Global cache across Serverless Lambda invocations
+ */
+let cached = global.mongoose;
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
 const connectDB = async () => {
   if (mongoose.connection.readyState >= 1) {
-    isConnected = true;
-    return;
+    cached.conn = mongoose.connection;
+    return cached.conn;
   }
 
   const mongoURI = process.env.MONGODB_URI;
   if (!mongoURI) {
-    console.log('[Database Info]: MONGODB_URI not set. Running in Live Demo / Fallback Mode.');
-    isConnected = false;
-    return;
+    return null;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000,
+      maxPoolSize: 10,
+    };
+
+    cached.promise = mongoose
+      .connect(mongoURI, opts)
+      .then((mongooseInstance) => {
+        console.log(`[MongoDB Connected]: Host -> ${mongooseInstance.connection.host} | DB -> ${mongooseInstance.connection.name}`);
+        return mongooseInstance.connection;
+      })
+      .catch((err) => {
+        cached.promise = null;
+        console.warn(`[Database Warning]: MongoDB connection failed (${err.message}). Using Persistent Store.`);
+        return null;
+      });
   }
 
   try {
-    const conn = await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 5000,
-    });
-    isConnected = true;
-    console.log(`[MongoDB Connected]: Host -> ${conn.connection.host}`);
-  } catch (error) {
-    isConnected = false;
-    console.log(`[Database Info]: Could not connect to MongoDB Atlas (${error.message}). Running in Live Demo / Fallback Mode.`);
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
   }
+
+  return cached.conn;
 };
 
-const getDBStatus = () => isConnected || mongoose.connection.readyState >= 1;
+const getDBStatus = () => mongoose.connection.readyState >= 1;
 
 module.exports = { connectDB, getDBStatus };

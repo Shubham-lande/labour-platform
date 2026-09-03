@@ -1,4 +1,21 @@
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+
+// Persistent storage file path (writable in local, container, and serverless environments)
+const getStorageFilePath = () => {
+  try {
+    const localDir = path.join(__dirname, '..', 'data');
+    if (!fs.existsSync(localDir)) {
+      fs.mkdirSync(localDir, { recursive: true });
+    }
+    return path.join(localDir, 'store.json');
+  } catch (e) {
+    return path.join(os.tmpdir(), 'labour_platform_store.json');
+  }
+};
+const STORAGE_FILE = getStorageFilePath();
 
 // Pre-seeded Users
 const fallbackUsers = [
@@ -398,6 +415,7 @@ const getFilteredFallbackProfiles = (filters = {}) => {
 
 // Bookings Fallback Helpers
 const addFallbackBooking = (bookingData) => {
+  loadPersistentState();
   const newBooking = {
     _id: 'BK-' + Math.floor(1000 + Math.random() * 9000),
     ...bookingData,
@@ -405,21 +423,26 @@ const addFallbackBooking = (bookingData) => {
     createdAt: new Date(),
   };
   fallbackBookings.unshift(newBooking);
+  savePersistentState();
   return newBooking;
 };
 
 const getFallbackBookingsForCustomer = (customerId) => {
+  loadPersistentState();
   return fallbackBookings.filter((b) => b.customer.toString() === customerId.toString());
 };
 
 const getFallbackBookingsForLabour = (labourId) => {
+  loadPersistentState();
   return fallbackBookings.filter((b) => b.labour.toString() === labourId.toString());
 };
 
 const updateFallbackBookingStatus = (bookingId, status) => {
+  loadPersistentState();
   const booking = fallbackBookings.find((b) => b._id === bookingId);
   if (booking) {
     booking.status = status;
+    savePersistentState();
     return booking;
   }
   return null;
@@ -615,6 +638,7 @@ const fallbackWorkUpdates = [
 
 // Project & Attendance Fallback Helper Methods
 const getFallbackProjects = (filterStatus = 'all') => {
+  loadPersistentState();
   if (!filterStatus || filterStatus === 'all') return fallbackProjects;
   if (filterStatus === 'active') return fallbackProjects.filter(p => ['in_progress', 'work_started', 'labour_assigned', 'paused'].includes(p.status));
   if (filterStatus === 'upcoming') return fallbackProjects.filter(p => ['created', 'scheduled'].includes(p.status));
@@ -624,6 +648,7 @@ const getFallbackProjects = (filterStatus = 'all') => {
 };
 
 const addFallbackProject = (prjData) => {
+  loadPersistentState();
   const newPrj = {
     _id: 'PRJ-' + Math.floor(1000 + Math.random() * 9000),
     ...prjData,
@@ -636,14 +661,17 @@ const addFallbackProject = (prjData) => {
     createdAt: new Date(),
   };
   fallbackProjects.unshift(newPrj);
+  savePersistentState();
   return newPrj;
 };
 
 const getFallbackProjectById = (id) => {
+  loadPersistentState();
   return fallbackProjects.find((p) => p._id === id) || null;
 };
 
 const assignFallbackWorkersToProject = (projectId, workerList) => {
+  loadPersistentState();
   const prj = fallbackProjects.find((p) => p._id === projectId);
   if (!prj) return null;
 
@@ -670,10 +698,12 @@ const assignFallbackWorkersToProject = (projectId, workerList) => {
     details: `Assigned ${workerList.length} worker(s) to project.`,
   });
 
+  savePersistentState();
   return prj;
 };
 
 const updateFallbackProjectStatus = (projectId, newStatus, details = '') => {
+  loadPersistentState();
   const prj = fallbackProjects.find((p) => p._id === projectId);
   if (!prj) return null;
 
@@ -687,10 +717,12 @@ const updateFallbackProjectStatus = (projectId, newStatus, details = '') => {
     details: details || `Project status advanced to ${newStatus}`,
   });
 
+  savePersistentState();
   return prj;
 };
 
 const addFallbackWorkUpdate = (projectId, updateData) => {
+  loadPersistentState();
   const newUpd = {
     _id: 'UPD-' + Math.floor(100 + Math.random() * 900),
     project: projectId,
@@ -713,6 +745,7 @@ const addFallbackWorkUpdate = (projectId, updateData) => {
     });
   }
 
+  savePersistentState();
   return newUpd;
 };
 
@@ -894,6 +927,71 @@ const fallbackComplaints = [
     createdAt: new Date('2026-08-25'),
   },
 ];
+
+// Persistence Engine for multi-user synchronization across serverless lambdas & container restarts
+function savePersistentState() {
+  try {
+    const payload = {
+      fallbackProjects,
+      fallbackBookings,
+      fallbackWorkUpdates,
+      fallbackAttendance,
+      fallbackPayments,
+      fallbackInvoices,
+      fallbackUsers,
+      fallbackLabourProfiles,
+      fallbackNotifications,
+      fallbackComplaints,
+    };
+    fs.writeFileSync(STORAGE_FILE, JSON.stringify(payload, null, 2), 'utf8');
+  } catch (e) {
+    // Non-fatal if filesystem is restricted
+  }
+}
+
+function loadPersistentState() {
+  try {
+    if (fs.existsSync(STORAGE_FILE)) {
+      const raw = fs.readFileSync(STORAGE_FILE, 'utf8');
+      const data = JSON.parse(raw);
+      if (Array.isArray(data.fallbackProjects) && data.fallbackProjects.length > 0) {
+        fallbackProjects.splice(0, fallbackProjects.length, ...data.fallbackProjects);
+      }
+      if (Array.isArray(data.fallbackBookings) && data.fallbackBookings.length > 0) {
+        fallbackBookings.splice(0, fallbackBookings.length, ...data.fallbackBookings);
+      }
+      if (Array.isArray(data.fallbackWorkUpdates) && data.fallbackWorkUpdates.length > 0) {
+        fallbackWorkUpdates.splice(0, fallbackWorkUpdates.length, ...data.fallbackWorkUpdates);
+      }
+      if (Array.isArray(data.fallbackAttendance) && data.fallbackAttendance.length > 0) {
+        fallbackAttendance.splice(0, fallbackAttendance.length, ...data.fallbackAttendance);
+      }
+      if (Array.isArray(data.fallbackPayments) && data.fallbackPayments.length > 0) {
+        fallbackPayments.splice(0, fallbackPayments.length, ...data.fallbackPayments);
+      }
+      if (Array.isArray(data.fallbackInvoices) && data.fallbackInvoices.length > 0) {
+        fallbackInvoices.splice(0, fallbackInvoices.length, ...data.fallbackInvoices);
+      }
+      if (Array.isArray(data.fallbackUsers) && data.fallbackUsers.length > 0) {
+        fallbackUsers.splice(0, fallbackUsers.length, ...data.fallbackUsers);
+      }
+      if (data.fallbackLabourProfiles && Object.keys(data.fallbackLabourProfiles).length > 0) {
+        Object.assign(fallbackLabourProfiles, data.fallbackLabourProfiles);
+      }
+      if (Array.isArray(data.fallbackNotifications) && data.fallbackNotifications.length > 0) {
+        fallbackNotifications.splice(0, fallbackNotifications.length, ...data.fallbackNotifications);
+      }
+      if (Array.isArray(data.fallbackComplaints) && data.fallbackComplaints.length > 0) {
+        fallbackComplaints.splice(0, fallbackComplaints.length, ...data.fallbackComplaints);
+      }
+    }
+  } catch (e) {
+    // Non-fatal parse error
+  }
+}
+
+// Initial hydration from persistent store
+loadPersistentState();
 
 // Helper Functions for Phase 4
 

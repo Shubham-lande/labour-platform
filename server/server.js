@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { connectDB } = require('./config/db');
+const { connectDB, getDBStatus } = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
 
 dotenv.config();
@@ -21,19 +21,24 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: '*',
+  origin: true,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Health Endpoint
 app.get('/api/health', (req, res) => {
+  const isMongoConnected = getDBStatus();
   res.json({
     status: 'online',
     timestamp: new Date().toISOString(),
     service: 'Labour Management & Workforce Booking API',
-    environment: process.env.NODE_ENV || 'development',
+    database: isMongoConnected ? 'MongoDB Connected' : 'Persistent Storage Active',
+    isMongoDB: isMongoConnected,
+    environment: process.env.NODE_ENV || 'production',
   });
 });
 
