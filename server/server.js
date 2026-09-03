@@ -29,37 +29,40 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Health Endpoint
-app.get('/api/health', (req, res) => {
-  const isMongoConnected = getDBStatus();
-  res.json({
-    status: 'online',
-    timestamp: new Date().toISOString(),
-    service: 'Labour Management & Workforce Booking API',
-    database: isMongoConnected ? 'MongoDB Connected' : 'Persistent Storage Active',
-    isMongoDB: isMongoConnected,
-    environment: process.env.NODE_ENV || 'production',
+const mountApiRoutes = (prefix = '') => {
+  app.get(`${prefix}/health`, (req, res) => {
+    const isMongoConnected = getDBStatus();
+    res.json({
+      status: 'online',
+      timestamp: new Date().toISOString(),
+      service: 'Labour Management & Workforce Booking API',
+      database: isMongoConnected ? 'MongoDB Connected' : 'Persistent Storage Active',
+      isMongoDB: isMongoConnected,
+      environment: process.env.NODE_ENV || 'production',
+    });
   });
-});
 
-// API Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/labour', require('./routes/labourRoutes'));
-app.use('/api/customer', require('./routes/customerRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
-app.use('/api/bookings', require('./routes/bookingRoutes'));
-app.use('/api/categories', require('./routes/categoryRoutes'));
-app.use('/api/skills', require('./routes/skillRoutes'));
-app.use('/api/projects', require('./routes/projectRoutes'));
-app.use('/api/attendance', require('./routes/attendanceRoutes'));
+  app.use(`${prefix}/auth`, require('./routes/authRoutes'));
+  app.use(`${prefix}/labour`, require('./routes/labourRoutes'));
+  app.use(`${prefix}/customer`, require('./routes/customerRoutes'));
+  app.use(`${prefix}/admin`, require('./routes/adminRoutes'));
+  app.use(`${prefix}/bookings`, require('./routes/bookingRoutes'));
+  app.use(`${prefix}/categories`, require('./routes/categoryRoutes'));
+  app.use(`${prefix}/skills`, require('./routes/skillRoutes'));
+  app.use(`${prefix}/projects`, require('./routes/projectRoutes'));
+  app.use(`${prefix}/attendance`, require('./routes/attendanceRoutes'));
 
-// Phase 4 Routes
-app.use('/api/payments', require('./routes/paymentRoutes'));
-app.use('/api/invoices', require('./routes/invoiceRoutes'));
-app.use('/api/reviews', require('./routes/reviewRoutes'));
-app.use('/api/messages', require('./routes/messageRoutes'));
-app.use('/api/notifications', require('./routes/notificationRoutes'));
-app.use('/api/complaints', require('./routes/complaintRoutes'));
+  // Phase 4 Routes
+  app.use(`${prefix}/payments`, require('./routes/paymentRoutes'));
+  app.use(`${prefix}/invoices`, require('./routes/invoiceRoutes'));
+  app.use(`${prefix}/reviews`, require('./routes/reviewRoutes'));
+  app.use(`${prefix}/messages`, require('./routes/messageRoutes'));
+  app.use(`${prefix}/notifications`, require('./routes/notificationRoutes'));
+  app.use(`${prefix}/complaints`, require('./routes/complaintRoutes'));
+};
+
+mountApiRoutes('/api');
+mountApiRoutes('');
 
 // 404 Fallback
 app.use('*', (req, res) => {
