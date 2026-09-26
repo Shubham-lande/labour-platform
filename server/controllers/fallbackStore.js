@@ -284,11 +284,19 @@ const fallbackOTPs = {};
 const getFallbackUsers = () => fallbackUsers;
 
 const findFallbackUserByEmail = (email) => {
-  return fallbackUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+  if (!email) return null;
+  const clean = email.trim().toLowerCase();
+  return fallbackUsers.find((u) => u.email && u.email.trim().toLowerCase() === clean);
 };
 
 const findFallbackUserByMobile = (mobile) => {
-  return fallbackUsers.find((u) => u.mobileNumber === mobile);
+  if (!mobile) return null;
+  const cleanDigits = mobile.replace(/[^0-9]/g, '').slice(-10);
+  if (!cleanDigits) return null;
+  return fallbackUsers.find((u) => {
+    const userDigits = (u.mobileNumber || '').replace(/[^0-9]/g, '').slice(-10);
+    return userDigits === cleanDigits;
+  });
 };
 
 const getFallbackUserById = (id) => {
