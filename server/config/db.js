@@ -35,9 +35,23 @@ const connectDB = async () => {
 
     cached.promise = mongoose
       .connect(mongoURI, opts)
-      .then((mongooseInstance) => {
+      .then(async (mongooseInstance) => {
         console.log(`[MongoDB Connected]: Host -> ${mongooseInstance.connection.host} | DB -> ${mongooseInstance.connection.name}`);
         cached.conn = mongooseInstance.connection;
+
+        // Auto-seed on first connection if database is empty
+        try {
+          const User = require('../models/User');
+          const count = await User.countDocuments();
+          if (count === 0) {
+            console.log('[Auto-Seed]: Fresh database detected. Auto-populating initial workforce and admin accounts...');
+            const seedData = require('../seed');
+            await seedData();
+          }
+        } catch (seedErr) {
+          console.warn('[Auto-Seed Warning]:', seedErr.message);
+        }
+
         return mongooseInstance.connection;
       })
       .catch((err) => {

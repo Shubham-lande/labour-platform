@@ -184,11 +184,21 @@ const seedData = async () => {
     console.log(' - Labour:   labour@labourhub.com | Labour@1234');
     console.log(' - Customer: customer@labourhub.com | Customer@1234');
 
-    process.exit(0);
+    if (require.main === module) {
+      process.exit(0);
+    }
+    return true;
   } catch (error) {
     console.error('Seeding Failed:', error.message);
-    process.exit(1);
+    if (require.main === module) {
+      process.exit(1);
+    }
+    return false;
   }
 };
 
-seedData();
+if (require.main === module) {
+  seedData();
+}
+
+module.exports = seedData;
