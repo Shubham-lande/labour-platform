@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 /**
- * Global cache across Serverless Lambda invocations
+ * Global cache across Serverless Lambda invocations & local dev
  */
 let cached = global.mongoose;
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = global.mongoose = { conn: null, promise: null, lastAttempt: 0 };
 }
 
 const connectDB = async () => {
-  if (mongoose.connection.readyState >= 1) {
+  if (mongoose.connection.readyState === 1) {
     cached.conn = mongoose.connection;
     return cached.conn;
   }
@@ -19,10 +19,17 @@ const connectDB = async () => {
     return null;
   }
 
+  // Throttle reconnection attempts to at most once per 60 seconds if offline
+  const now = Date.now();
+  if (cached.lastAttempt && now - cached.lastAttempt < 60000 && !cached.promise) {
+    return null;
+  }
+
   if (!cached.promise) {
+    cached.lastAttempt = now;
     const opts = {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 5000,
+      bufferCommands: true,
+      serverSelectionTimeoutMS: 3000,
       maxPoolSize: 10,
     };
 
@@ -30,11 +37,12 @@ const connectDB = async () => {
       .connect(mongoURI, opts)
       .then((mongooseInstance) => {
         console.log(`[MongoDB Connected]: Host -> ${mongooseInstance.connection.host} | DB -> ${mongooseInstance.connection.name}`);
+        cached.conn = mongooseInstance.connection;
         return mongooseInstance.connection;
       })
       .catch((err) => {
         cached.promise = null;
-        console.warn(`[Database Warning]: MongoDB connection failed (${err.message}). Using Persistent Store.`);
+        console.warn(`[Database Info]: MongoDB connection not active (${err.message}). Seamlessly running on Embedded Persistent Store.`);
         return null;
       });
   }
@@ -48,6 +56,7 @@ const connectDB = async () => {
   return cached.conn;
 };
 
-const getDBStatus = () => mongoose.connection.readyState >= 1;
+const getDBStatus = () => mongoose.connection.readyState === 1;
 
 module.exports = { connectDB, getDBStatus };
+

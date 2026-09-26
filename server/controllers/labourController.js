@@ -5,6 +5,7 @@ const {
   getFilteredFallbackProfiles,
   getFallbackLabourProfile,
   getFallbackBookingsForLabour,
+  getFallbackProjects,
 } = require('./fallbackStore');
 
 const Project = require('../models/Project');

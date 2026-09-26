@@ -53,9 +53,8 @@ const MobileNav = ({ activeTab, setActiveTab }) => {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${
-              isActive ? 'text-cyan-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${isActive ? 'text-cyan-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
+              }`}
           >
             <Icon className="w-5 h-5" />
             <span className="text-[10px] tracking-tight">{item.label}</span>
