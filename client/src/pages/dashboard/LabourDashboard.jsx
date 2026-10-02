@@ -220,16 +220,16 @@ const LabourDashboard = () => {
     <DashboardLayout activeTab={activeTab} setActiveTab={setActiveTab}>
       <PageTransition key={activeTab}>
         {/* Title & Quick Availability Switch Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <StatusBadge status="verified" text="Verified Master Worker" />
-              <span className="text-xs font-mono text-slate-400">ID: #LBR-2026-98</span>
+              <span className="text-xs font-mono text-cyan-400 font-semibold">ID: #LBR-2026-98</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Labour Dashboard — <span className="text-cyan-400">{user?.fullName || 'Worker Profile'}</span>
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-md">
+              Labour Dashboard — <span className="text-amber-400">{user?.fullName || 'Worker Profile'}</span>
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-300 mt-1">
               Manage work requests, site attendance check-ins, job progress, proof uploads, and project chat stream.
             </p>
           </div>
@@ -237,20 +237,20 @@ const LabourDashboard = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => handleOpenChat(projects[0])}
-              className="px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-200 bg-white/10 hover:bg-white/20 border border-white/10 flex items-center gap-1.5 transition-all"
+              className="px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-200 bg-white/10 hover:bg-white/20 border border-white/10 flex items-center gap-1.5 transition-all cursor-pointer shadow-sm backdrop-blur-md"
             >
               <MessageSquare className="w-4 h-4 text-cyan-400" /> Project Chat
             </button>
 
             {/* Availability Status Switcher */}
-            <div className="flex items-center gap-3 bg-white/5 p-1.5 rounded-2xl border border-white/10 shrink-0">
+            <div className="flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-2xl border border-white/10 shrink-0 shadow-lg backdrop-blur-xl">
               <span className="text-xs font-bold text-slate-400 pl-2 hidden sm:inline">Status:</span>
               <button
                 onClick={() => handleAvailabilityToggle('available')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
                   availabilityStatus === 'available'
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-md shadow-emerald-500/10'
-                    : 'bg-transparent text-slate-400 border-transparent hover:text-slate-200'
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
+                    : 'bg-transparent text-slate-400 border-transparent hover:text-white'
                 }`}
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Available
@@ -258,10 +258,10 @@ const LabourDashboard = () => {
 
               <button
                 onClick={() => handleAvailabilityToggle('busy')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
                   availabilityStatus === 'busy'
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-md shadow-amber-500/10'
-                    : 'bg-transparent text-slate-400 border-transparent hover:text-slate-200'
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm'
+                    : 'bg-transparent text-slate-400 border-transparent hover:text-white'
                 }`}
               >
                 <span className="w-2 h-2 rounded-full bg-amber-400" /> Busy
@@ -269,10 +269,10 @@ const LabourDashboard = () => {
 
               <button
                 onClick={() => handleAvailabilityToggle('offline')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
                   availabilityStatus === 'offline'
-                    ? 'bg-slate-700 text-slate-200 border-slate-600 shadow-md'
-                    : 'bg-transparent text-slate-400 border-transparent hover:text-slate-200'
+                    ? 'bg-slate-700/60 text-slate-200 border-slate-600 shadow-sm'
+                    : 'bg-transparent text-slate-400 border-transparent hover:text-white'
                 }`}
               >
                 <span className="w-2 h-2 rounded-full bg-slate-500" /> Offline
@@ -281,59 +281,126 @@ const LabourDashboard = () => {
           </div>
         </div>
 
+        {/* Dynamic Worker Status & Direct Payout Telemetry Banner */}
+        <div className="mb-8 p-5 rounded-2xl bg-slate-900/85 backdrop-blur-xl border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5 text-amber-400 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white">Direct UPI Escrow Payout Channel Active</h3>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+                  ● Ready for Instant Settlement
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                GPS Attendance Geo-Fence calibrated. Complete on-site shift check-ins to unlock instant payouts.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0">
+            <button
+              onClick={() => setActiveTab('attendance')}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+            >
+              <CalendarCheck className="w-3.5 h-3.5 text-amber-400" /> GPS Check-in
+            </button>
+            <button
+              onClick={() => setActiveTab('requests')}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-cyan-300 bg-cyan-500/15 border border-cyan-500/30 hover:bg-cyan-500/25 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+            >
+              <Briefcase className="w-3.5 h-3.5 text-cyan-400" /> Job Requests ({workRequests.filter(w => w.status === 'pending').length || 4})
+            </button>
+          </div>
+        </div>
+
         {loading ? (
           <StatGridSkeleton />
         ) : (
           <>
-            {/* KPI Summary Grid */}
+            {/* KPI Summary Grid - Rich Gradient Frosted Glass */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-              <GlassCard hover={false} delay={0.05}>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-400">Work Requests</span>
-                  <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
-                    <Briefcase className="w-4 h-4" />
+              {/* Card 1: Emerald/Teal - Work Requests */}
+              <div className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-emerald-950/70 via-slate-900/80 to-teal-950/60 border border-emerald-500/30 shadow-xl backdrop-blur-xl group hover:border-emerald-500/50 hover:shadow-emerald-900/30 transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0 shadow-lg shadow-emerald-500/20">
+                    <Briefcase className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-slate-300 block tracking-wide">Work Requests</span>
+                    <p className="text-3xl font-black text-white font-mono mt-0.5">
+                      {workRequests.filter(w => w.status === 'pending').length || 4}
+                    </p>
                   </div>
                 </div>
-                <p className="text-2xl font-extrabold text-white mt-3 font-mono">{workRequests.filter(w => w.status === 'pending').length || 4}</p>
-                <p className="text-[11px] text-amber-400 mt-1 flex items-center gap-1">
-                  <Zap className="w-3 h-3" /> Action Required
-                </p>
-              </GlassCard>
+                <div className="mt-4 pt-3 border-t border-emerald-500/20 flex items-center justify-between text-xs">
+                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                    <Zap className="w-3.5 h-3.5 animate-pulse" /> Action Required
+                  </span>
+                  <span className="text-slate-400">Respond →</span>
+                </div>
+              </div>
 
-              <GlassCard hover={false} delay={0.1}>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-400">Assigned Projects</span>
-                  <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
-                    <HardHat className="w-4 h-4" />
+              {/* Card 2: Purple/Indigo - Assigned Projects */}
+              <div className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-purple-950/70 via-slate-900/80 to-indigo-950/60 border border-purple-500/30 shadow-xl backdrop-blur-xl group hover:border-purple-500/50 hover:shadow-purple-900/30 transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 shrink-0 shadow-lg shadow-purple-500/20">
+                    <HardHat className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-slate-300 block tracking-wide">Assigned Projects</span>
+                    <p className="text-3xl font-black text-white font-mono mt-0.5">
+                      {projects.length || 2}
+                    </p>
                   </div>
                 </div>
-                <p className="text-2xl font-extrabold text-white mt-3 font-mono">{projects.length}</p>
-                <p className="text-[11px] text-cyan-400 mt-1">Lower Parel & BKC Sites</p>
-              </GlassCard>
+                <div className="mt-4 pt-3 border-t border-purple-500/20 flex items-center justify-between text-xs">
+                  <span className="text-purple-300 font-semibold">Lower Parel & BKC Sites</span>
+                  <span className="text-purple-400">View →</span>
+                </div>
+              </div>
 
-              <GlassCard hover={false} delay={0.15}>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-400">Today Attendance</span>
-                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
-                    <CalendarCheck className="w-4 h-4" />
+              {/* Card 3: Electric Blue / Cyan - Today Attendance */}
+              <div className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-blue-950/70 via-slate-900/80 to-cyan-950/60 border border-cyan-500/30 shadow-xl backdrop-blur-xl group hover:border-cyan-500/50 hover:shadow-cyan-900/30 transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0 shadow-lg shadow-cyan-500/20">
+                    <CalendarCheck className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-slate-300 block tracking-wide">Today Attendance</span>
+                    <p className="text-xl font-bold text-emerald-400 mt-1 truncate">
+                      {stats.todayAttendanceStatus || 'Checked-In (Site 4B)'}
+                    </p>
                   </div>
                 </div>
-                <p className="text-lg font-bold text-emerald-400 mt-3 truncate">{stats.todayAttendanceStatus}</p>
-                <p className="text-[11px] text-slate-400 mt-1">Logged at 08:45 AM</p>
-              </GlassCard>
+                <div className="mt-4 pt-3 border-t border-cyan-500/20 flex items-center justify-between text-xs">
+                  <span className="text-cyan-300 font-semibold">GPS Verified 08:45 AM</span>
+                  <span className="text-cyan-400">Details →</span>
+                </div>
+              </div>
 
-              <GlassCard hover={false} delay={0.2}>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-400">Monthly Earnings</span>
-                  <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
-                    <Wallet className="w-4 h-4" />
+              {/* Card 4: Amber / Gold - Monthly Earnings */}
+              <div className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-amber-950/70 via-slate-900/80 to-orange-950/60 border border-amber-500/30 shadow-xl backdrop-blur-xl group hover:border-amber-500/50 hover:shadow-amber-900/30 transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 shadow-lg shadow-amber-500/20">
+                    <Wallet className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-slate-300 block tracking-wide">Monthly Earnings</span>
+                    <p className="text-3xl font-black text-white font-mono mt-0.5">
+                      ₹{stats.monthlyEarnings.toLocaleString()}
+                    </p>
                   </div>
                 </div>
-                <p className="text-2xl font-extrabold text-white mt-3 font-mono">₹{stats.monthlyEarnings.toLocaleString()}</p>
-                <p className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1">
-                  <Star className="w-3 h-3 text-amber-400 fill-amber-400" /> {stats.averageRating} Rating
-                </p>
-              </GlassCard>
+                <div className="mt-4 pt-3 border-t border-amber-500/20 flex items-center justify-between text-xs">
+                  <span className="text-amber-400 font-semibold flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 fill-amber-400" /> {stats.averageRating} Rating
+                  </span>
+                  <span className="text-amber-300">Instant UPI →</span>
+                </div>
+              </div>
             </div>
 
             {/* TAB CONTENT PANELS */}

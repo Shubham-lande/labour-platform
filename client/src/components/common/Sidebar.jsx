@@ -74,7 +74,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) => {
 
   return (
     <aside
-      className={`hidden md:flex flex-col border-r border-white/10 glass-panel h-screen sticky top-0 transition-all duration-300 z-30 ${
+      className={`hidden md:flex flex-col border-r border-white/10 glass-panel h-screen sticky top-0 transition-all duration-300 z-30 shadow-2xl ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
@@ -82,15 +82,15 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) => {
       <div className="h-16 px-5 flex items-center justify-between border-b border-white/10">
         {!collapsed && (
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/25">
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div>
               <span className="text-base font-extrabold tracking-tight text-white block leading-none">
                 Labour<span className="text-cyan-400">Hub</span>
               </span>
-              <span className="text-[10px] text-cyan-400/80 font-mono tracking-widest uppercase">
-                Enterprise v1.0
+              <span className="text-[10px] text-cyan-300 font-mono tracking-widest uppercase font-bold">
+                Enterprise OS
               </span>
             </div>
           </div>
@@ -102,7 +102,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) => {
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+          className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer border border-white/10"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
@@ -117,10 +117,10 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) => {
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all duration-200 group relative ${
+              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all duration-200 group relative cursor-pointer ${
                 isActive
-                  ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/10 text-cyan-400 border border-cyan-500/30 shadow-lg shadow-cyan-500/10 font-semibold'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-cyan-500/25 to-blue-600/20 text-white border border-cyan-400/40 shadow-lg shadow-cyan-500/15 font-bold'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
               <Icon
@@ -133,7 +133,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) => {
                 <span
                   className={`ml-auto px-2 py-0.5 text-[10px] font-bold rounded-full border ${
                     isActive
-                      ? 'bg-cyan-500/30 text-cyan-300 border-cyan-400/40'
+                      ? 'bg-cyan-500/30 text-cyan-200 border-cyan-400/50'
                       : 'bg-white/10 text-slate-300 border-white/10'
                   }`}
                 >
@@ -148,11 +148,11 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) => {
       {/* User Footer Summary */}
       <div className="p-3 border-t border-white/10">
         <div
-          className={`flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5 ${
+          className={`flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/10 ${
             collapsed ? 'justify-center' : ''
           }`}
         >
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center font-bold text-cyan-400 border border-white/10 shrink-0 overflow-hidden">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center font-bold text-cyan-400 border border-white/15 shrink-0 overflow-hidden shadow-sm">
             {user?.avatar ? (
               <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
@@ -162,7 +162,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }) => {
           {!collapsed && (
             <div className="overflow-hidden flex-1">
               <p className="text-xs font-bold text-white truncate">{user?.fullName || 'Active User'}</p>
-              <p className="text-[11px] text-cyan-400 capitalize font-mono">{user?.role || 'Guest'}</p>
+              <p className="text-[11px] text-cyan-400 capitalize font-mono font-semibold">{user?.role || 'Guest'}</p>
             </div>
           )}
         </div>

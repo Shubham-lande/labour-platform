@@ -2,87 +2,209 @@
 
 @layer base {
   :root {
-    --bg-primary: #0B0F17;
-    --bg-secondary: #111827;
-    --bg-surface: rgba(17, 24, 39, 0.75);
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-accent: rgba(6, 182, 212, 0.3);
+    --bg-primary: #070A12;
+    --border-subtle: rgba(255, 255, 255, 0.12);
+    --border-accent: rgba(6, 182, 212, 0.4);
+    
     --brand-cyan: #06B6D4;
     --brand-blue: #3B82F6;
+    --brand-amber: #F59E0B;
     --brand-emerald: #10B981;
+    --brand-purple: #8B5CF6;
   }
 
   body {
     background-color: var(--bg-primary);
+    color: #F8FAFC;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
   }
 }
 
-/* Custom Glassmorphism Utilities */
+/* Dynamic Image Background Classes */
+.bg-hero-image {
+  background-image: linear-gradient(to bottom, rgba(7, 10, 18, 0.78), rgba(7, 10, 18, 0.94)), url('/hero_construction_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.bg-auth-image {
+  background-image: linear-gradient(to bottom, rgba(7, 10, 18, 0.82), rgba(7, 10, 18, 0.94)), url('/auth_infrastructure_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.bg-labour-dashboard {
+  background-image: linear-gradient(to bottom, rgba(7, 10, 18, 0.86), rgba(7, 10, 18, 0.95)), url('/labour_dashboard_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.bg-customer-dashboard {
+  background-image: linear-gradient(to bottom, rgba(7, 10, 18, 0.86), rgba(7, 10, 18, 0.95)), url('/hero_construction_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.bg-admin-dashboard {
+  background-image: linear-gradient(to bottom, rgba(7, 10, 18, 0.86), rgba(7, 10, 18, 0.95)), url('/auth_infrastructure_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Glassmorphism Classes with High Contrast & Readability */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(13, 18, 32, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
 }
 
 .glass-card {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.7) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-}
-
-.glass-card-hover {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.25rem;
+  color: #FFFFFF;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.glass-card:hover {
+  border-color: rgba(6, 182, 212, 0.45);
+  box-shadow: 0 20px 45px -10px rgba(6, 182, 212, 0.2);
+  transform: translateY(-2px);
+}
+
 .glass-card-hover:hover {
-  border-color: rgba(6, 182, 212, 0.4);
-  box-shadow: 0 12px 40px -10px rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.45);
+  box-shadow: 0 20px 45px -10px rgba(6, 182, 212, 0.2);
   transform: translateY(-2px);
 }
 
 .glass-input {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #F3F4F6;
+  background: rgba(11, 15, 26, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+  border-radius: 0.875rem;
+  transition: all 0.2s ease;
 }
 
 .glass-input:focus {
+  background: rgba(15, 23, 42, 0.95);
   border-color: #06B6D4;
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);
   outline: none;
 }
 
-/* Futuristic Shimmer Glow Animation */
-@keyframes shimmer {
+.luxury-input {
+  background: rgba(11, 15, 26, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+  border-radius: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.luxury-input:focus {
+  background: rgba(15, 23, 42, 0.95);
+  border-color: #06B6D4;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);
+  outline: none;
+}
+
+.luxury-card {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.25rem;
+  color: #FFFFFF;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* Glowing Border Hologram Card */
+.glow-border-card {
+  position: relative;
+  background: rgba(13, 18, 32, 0.88);
+  backdrop-filter: blur(16px);
+  border-radius: 1.25rem;
+  z-index: 1;
+}
+
+.glow-border-card::before {
+  content: '';
+  position: absolute;
+  top: -1.5px;
+  left: -1.5px;
+  right: -1.5px;
+  bottom: -1.5px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #06b6d4, #3b82f6, #f59e0b, #10b981);
+  background-size: 300% 300%;
+  z-index: -1;
+  opacity: 0.45;
+  transition: opacity 0.3s ease;
+  animation: borderRotate 7s linear infinite;
+}
+
+.glow-border-card:hover::before {
+  opacity: 0.9;
+}
+
+@keyframes borderRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Radar Sweep Animation */
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-radar {
+  animation: radarSweep 3.5s linear infinite;
+}
+
+/* Shimmer Headline */
+@keyframes shimmerHeadline {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-.shimmer-loader {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.03) 100%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite ease-in-out;
+.shimmer-headline {
+  background: linear-gradient(90deg, #FFFFFF 0%, #38BDF8 30%, #FBBF24 60%, #FFFFFF 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmerHeadline 5s linear infinite;
 }
 
-/* Custom Dark Scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B0F17;
+  background: #070A12;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1F2937;
+  background: #1E293B;
   border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: #334155;
 }
