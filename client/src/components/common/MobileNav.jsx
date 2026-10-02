@@ -45,7 +45,7 @@ const MobileNav = ({ activeTab, setActiveTab }) => {
   const items = MOBILE_ITEMS[role] || MOBILE_ITEMS.customer;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 glass-panel border-t border-white/10 z-40 flex items-center justify-around px-2">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-950/90 backdrop-blur-2xl border-t border-white/15 z-40 flex items-center justify-around px-2 shadow-2xl">
       {items.map((item) => {
         const Icon = item.icon;
         const isActive = activeTab === item.id;
@@ -53,10 +53,13 @@ const MobileNav = ({ activeTab, setActiveTab }) => {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${isActive ? 'text-cyan-400 font-bold scale-105' : 'text-slate-400 hover:text-slate-200'
-              }`}
+            className={`flex flex-col items-center gap-1 py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
+              isActive
+                ? 'bg-gradient-to-r from-purple-600/30 to-cyan-500/30 text-white font-bold border border-cyan-400/40 shadow-lg shadow-cyan-500/20 scale-105'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
           >
-            <Icon className="w-5 h-5" />
+            <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400 animate-pulse' : 'text-slate-400'}`} />
             <span className="text-[10px] tracking-tight">{item.label}</span>
           </button>
         );
